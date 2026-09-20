@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Wedding Invitation | Zayn & Nora</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Birthday Chamki / Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="gate-locked">
+
+  <!-- Main Mobile Frame Container -->
+  <div class="app-wrapper">
+
+    <!-- Top Music Audio Toggle Button -->
+    <button class="audio-btn" id="audioToggle" aria-label="Toggle Audio">
+      <svg viewBox="0 0 24 24">
+        <path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zm-2.5 0L6.5 7.5H3v9h3.5l5 4.27V3.23z"/>
+      </svg>
+    </button>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" loop preload="auto">
+      <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-113554.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- ========================================================
+         PAGE 1: GATE COVER OVERLAY (Tap to Open)
+         ======================================================== -->
+    <div class="gate-overlay" id="gateOverlay">
+      <div class="gate-half gate-left"></div>
+      <div class="gate-half gate-right"></div>
+
+      <div class="emblem-wrapper" id="openTrigger">
+        <div class="emblem-badge">
+          <span class="star">✦</span>
+          <div class="tap-text">Tap<br>To Open</div>
+          <span class="star">✦</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         PAGE 2: INVITATION MAIN (Couple Names & Fountain)
+         ======================================================== -->
+    <section class="page-section">
+      <div class="drape-top"></div>
+
+      <div class="couple-details">
+        <div class="top-heart">♥</div>
+        <p class="greeting">We're getting married</p>
+        
+        <div class="heart-divider">
+          <span class="heart-symbol">✦</span>
+        </div>
+
+        <h1 class="name-title">Shubham</h1>
+        <p class="bio-text">
+          <span class="degree">B.E.</span><br>
+          Mechhanical Engineer<br>
+          Son of Mr. & Mrs. Shimpi
+        </p>
+
+        <span class="ampersand">&</span>
+
+        <h1 class="name-title">Sayali</h1>
+        <p class="bio-text">
+          <span class="degree">MCA</span><br>
+          Software Engineer<br>
+           Daughter of Mr. & Mrs. Jadhav
+        </p>
+      </div>
+
+      <div class="fountain-container">
+        <div class="fountain-bowl"></div>
+        <div class="scroll-arrow">▼ SCROLL DOWN ▼</div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PAGE 3: WELCOME MESSAGE
+         ======================================================== -->
+    <section class="page-section page-center">
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+      
+      <p class="welcome-text">
+        We are honored to welcome you to the Wedding ceremony of Shubham & Sayali As they begin their journey together in faith and love, we thank you for being part of this blessed occasion ♥
+      </p>
+
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+      <div class="scroll-arrow">Scratch to Reveal ↓</div>
+    </section>
+
+    <!-- ========================================================
+         PAGE 4: SCRATCH CARD (Reveals Date + Confetti Blast)
+         ======================================================== -->
+    <section class="page-section page-center" id="scratchSection">
+      <h2 class="section-title-italic" id="scratchHeading">Scratch to Reveal</h2>
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+
+      <div class="scratch-wrapper">
+        <div class="revealed-content" id="revealedCard">
+          <p class="revealed-sub">You're Invited!</p>
+          <h3 class="revealed-main-date">APRIL 21<sup>st</sup>, 2027</h3>
+          <p class="revealed-day-time">Wednesday • 12:30 AM</p>
+          <span class="revealed-place">Rajamata Jijau Mangal Karyalay</span>
+        </div>
+
+        <canvas id="scratchCanvas" width="260" height="240"></canvas>
+      </div>
+
+    <a class="save-date-btn" target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Shubham+%26+Sayali+Wedding&dates=20270421T070000Z/20270421T110000Z&details=Our+Forever+Begins&location=Rajamata+Jijau+Mangal+Karyalay">
+        <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zm-5-8h-2v2h-2v2h2v2h2v-2h2v-2h-2z"/></svg>
+        SAVE THE DATE
+      </a>
+    </section>
+
+    <!-- ========================================================
+         PAGE 5: PHOTO SLIDER & COUNTDOWN
+         ======================================================== -->
+    <section class="page-section page-center">
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+
+      <div class="photo-carousel-wrapper">
+        <div class="carousel-track" id="carouselTrack">
+          <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=700&q=80" alt="Couple 1" />
+          </div>
+          <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=700&q=80" alt="Couple 2" />
+          </div>
+          <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=700&q=80" alt="Couple 3" />
+          </div>
+        </div>
+
+        <div class="slider-dots" id="sliderDots">
+          <span class="dot active" data-index="0"></span>
+          <span class="dot" data-index="1"></span>
+          <span class="dot" data-index="2"></span>
+        </div>
+      </div>
+
+      <h2 class="section-title-italic" style="margin-top: 25px;">Counting Down to Forever</h2>
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+
+      <div class="countdown-grid">
+        <div class="timer-box">
+          <div class="num" id="cd-days">00</div>
+          <div class="lbl">DAYS</div>
+        </div>
+        <div class="timer-box">
+          <div class="num" id="cd-hours">00</div>
+          <div class="lbl">HOURS</div>
+        </div>
+        <div class="timer-box">
+          <div class="num" id="cd-minutes">00</div>
+          <div class="lbl">MINS</div>
+        </div>
+        <div class="timer-box">
+          <div class="num" id="cd-seconds">00</div>
+          <div class="lbl">SECS</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PAGE 6: PROGRAM TIMELINE
+         ======================================================== -->
+    <section class="page-section page-center">
+      <div class="timeline-clock-icon">
+        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+      </div>
+
+      <h2 class="section-title-italic">Program Timeline</h2>
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+
+      <div class="timeline-list">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <h4 class="event-name">Engagement</h4>
+            <div class="event-time">April 20, 2027, 04:30 PM</div>
+            <p class="event-note">We welcome you.. ♥</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <h4 class="event-name">Haldi</h4>
+            <div class="event-time">April 20, 2027, 07:30 PM</div>
+            <p class="event-note">Your presence means a lot!</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <h4 class="event-name">Wedding</h4>
+            <div class="event-time">April 21, 2027, 12:30 PM</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PAGE 7: VENUE (Palace Artwork & Google Maps Link)
+         ======================================================== -->
+    <section class="page-section page-center">
+      <div class="section-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </div>
+
+      <h2 class="section-title-italic">Venue</h2>
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+
+      <h3 class="venue-name">Rajamata Jijau Mangal Karyalay</h3>
+      <p class="venue-city">kasare, Kasare, Maharashtra 424310</p>
+
+      <div class="palace-artwork-container">
+        <svg class="palace-svg" viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+          <path d="M40 110 V60 L45 50 L50 60 V110" fill="none" stroke="#b0bead" stroke-width="1.5" />
+          <path d="M260 110 V60 L255 50 L250 60 V110" fill="none" stroke="#b0bead" stroke-width="1.5" />
+          <path d="M50 110 H250 V70 H50 Z" fill="none" stroke="#b0bead" stroke-width="1.5" />
+          <path d="M75 70 C75 45 115 45 115 70" fill="none" stroke="#b0bead" stroke-width="1.5" />
+          <line x1="95" y1="45" x2="95" y2="38" stroke="#b0bead" stroke-width="1.5" />
+          <path d="M185 70 C185 45 225 45 225 70" fill="none" stroke="#b0bead" stroke-width="1.5" />
+          <line x1="205" y1="45" x2="205" y2="38" stroke="#b0bead" stroke-width="1.5" />
+          <path d="M120 70 C120 30 150 15 150 15 C150 15 180 30 180 70" fill="none" stroke="#b0bead" stroke-width="1.5" />
+          <line x1="150" y1="15" x2="150" y2="5" stroke="#b0bead" stroke-width="1.5" />
+          <path d="M135 110 V85 C135 76 165 76 165 85 V110" fill="none" stroke="#b0bead" stroke-width="1.5" />
+          <rect x="75" y="80" width="20" height="20" rx="4" fill="none" stroke="#b0bead" stroke-width="1.2" />
+          <rect x="205" y="80" width="20" height="20" rx="4" fill="none" stroke="#b0bead" stroke-width="1.2" />
+        </svg>
+      </div>
+
+      <a class="view-maps-btn" target="_blank" href="https://maps.app.goo.gl/q1aEBMm6arUZVtZTA">
+        View on Google Maps
+      </a>
+    </section>
+
+    <!-- ========================================================
+         PAGE 8: DRESS CODE
+         ======================================================== -->
+    <section class="page-section page-center">
+      <div class="section-icon">
+        <svg viewBox="0 0 24 24"><path d="M21.9 8.89l-4.06-4.06c-.4-.4-1.02-.4-1.42 0L14.7 6.55C14.07 6.2 13.06 6 12 6s-2.07.2-2.7.55L7.58 4.83c-.4-.4-1.02-.4-1.42 0L2.1 8.89c-.39.39-.39 1.02 0 1.41l2.83 2.83c.39.39 1.02.39 1.41 0l1.66-1.66V20c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-8.53l1.66 1.66c.39.39 1.02.39 1.41 0l2.83-2.83c.39-.39.39-1.02 0-1.41z"/></svg>
+      </div>
+
+      <h2 class="section-title-italic">Dress Code</h2>
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+
+      <div class="dress-box">
+        <h4 class="sub-heading">Women</h4>
+        <div class="dress-line"></div>
+        <p class="dress-desc">Elegant formal attire in pastel or jewel tones</p>
+      </div>
+
+      <div class="dress-box" style="margin-top: 35px;">
+        <h4 class="sub-heading">Men</h4>
+        <div class="dress-line"></div>
+        <p class="dress-desc">Suit or traditional formal wear</p>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PAGE 9: PRE-WEDDING EVENTS (STANDALONE SECTION)
+         ======================================================== -->
+    <section class="page-section page-center">
+      <div class="section-icon">
+        <svg viewBox="0 0 24 24"><path d="M2 22l14-5-9-9-5 14zm15.6-14.6l1.4-1.4 1.4 1.4-1.4 1.4-1.4-1.4zm2.8-2.8l1.4-1.4 1.4 1.4-1.4 1.4-1.4-1.4zm-14 0l1.4-1.4 1.4 1.4-1.4 1.4-1.4-1.4zM22 2l-2.5 2.5 1.5 1.5L22 4.5V2z"/></svg>
+      </div>
+
+      <h2 class="section-title-italic">Pre-Wedding Events</h2>
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+
+      <div class="event-block">
+        <h4 class="sub-heading">Mahendi Ceremony</h4>
+        <p class="event-meta">April 20, 2027, 5:30 PM</p>
+        <p class="event-loc">At Bride's House</p>
+      </div>
+
+      <div class="event-block" style="margin-top: 30px;">
+        <h4 class="sub-heading">DJ & Sangeet</h4>
+        <p class="event-meta">April 20, 2027, 8:30 PM</p>
+        <p class="event-loc">At Wedding Hall</p>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PAGE 10: GIFTS (STANDALONE SEPARATE SECTION)
+         ======================================================== -->
+    <section class="page-section page-center">
+      <div class="section-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.65-.5-.65C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76V14h2V8.76L15.38 12 17 10.83 14.92 8H20v6z"/></svg>
+      </div>
+
+      <h2 class="section-title-italic">Gifts</h2>
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+      
+      <p class="section-desc-note">
+        Your love, blessings, and presence are the greatest gifts we could ever ask for.
+      </p>
+    </section>
+
+    <!-- ========================================================
+         PAGE 11: RSVP FORM
+         ======================================================== -->
+    <section class="page-section page-center">
+      <div class="section-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      </div>
+
+      <h2 class="section-title-italic" style="font-size: 38px;">RSVP</h2>
+      <div class="heart-divider"><span class="heart-symbol">♥</span></div>
+
+      <form class="rsvp-form" id="rsvpForm">
+        <div class="form-group">
+          <label class="form-label">Your Name <span class="required">*</span></label>
+          <input type="text" class="form-input" id="guestName" placeholder="Your full name" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <span class="label-icon">👥</span> Will you be attending? <span class="required">*</span>
+          </label>
+          <div class="select-wrapper">
+            <select class="form-select" id="guestAttendance" required>
+              <option value="" disabled selected>Select...</option>
+              <option value="Joyfully Accept">Joyfully Accept</option>
+              <option value="Regretfully Decline">Regretfully Decline</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Your Message</label>
+          <textarea class="form-textarea" id="guestMessage" rows="3" placeholder="Write your wishes..."></textarea>
+        </div>
+
+        <button type="submit" class="send-msg-btn">Send Message</button>
+      </form>
+    </section>
+
+    <!-- ========================================================
+         PAGE 12: CELEBRATE WITH YOU (Fairy Lights Card)
+         ======================================================== -->
+    <section class="page-section page-center celebrate-section">
+      <div class="lights-string-wrap">
+        <svg class="wavy-string-svg" viewBox="0 0 350 40" preserveAspectRatio="none">
+          <path d="M 0,20 Q 90,5 175,20 T 350,20" fill="none" stroke="#b4c2b0" stroke-width="1.2" />
+          <circle cx="45" cy="14" r="2.5" fill="#d2c4aa" />
+          <circle cx="95" cy="24" r="2" fill="#c2b295" />
+          <circle cx="140" cy="12" r="2.5" fill="#d8caaF" />
+          <circle cx="210" cy="25" r="2.5" fill="#d2c4aa" />
+          <circle cx="260" cy="13" r="2" fill="#c2b295" />
+          <circle cx="305" cy="23" r="2.5" fill="#d8caaF" />
+        </svg>
+      </div>
+
+      <div class="celebrate-text-group">
+        <h2 class="celebrate-main-text">We can't wait to<br>celebrate with you!</h2>
+        <p class="celebrate-names">Shubham &amp; Sayali</p>
+      </div>
+
+      <div class="lights-string-wrap">
+        <svg class="wavy-string-svg" viewBox="0 0 350 40" preserveAspectRatio="none">
+          <path d="M 0,20 Q 90,35 175,20 T 350,20" fill="none" stroke="#b4c2b0" stroke-width="1.2" />
+          <circle cx="50" cy="25" r="2.5" fill="#d2c4aa" />
+          <circle cx="100" cy="14" r="2" fill="#c2b295" />
+          <circle cx="145" cy="26" r="2.5" fill="#d8caaF" />
+          <circle cx="205" cy="13" r="2.5" fill="#d2c4aa" />
+          <circle cx="255" cy="25" r="2.5" fill="#c2b295" />
+          <circle cx="300" cy="15" r="2.5" fill="#d8caaF" />
+        </svg>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PAGE 13: FINAL FOOTER
+         ======================================================== -->
+    <footer class="final-brand-footer">
+      <p class="footer-create-sub">Your presence is precious to us ❤️</p>
+      <h3 class="footer-couple-title">Shubham &amp; Sayali</h3>
+    </footer>
+
+  </div> <!-- /app-wrapper -->
+
+  <script src="script.js"></script>
+</body>
+</html>
