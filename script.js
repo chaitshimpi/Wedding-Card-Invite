@@ -1,15 +1,119 @@
 // ==========================================
-// 3. Scratch Card (Pixel-Percentage Based Scratching)
+// 1. Force Page to Top on Refresh / Load
+// ==========================================
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
+window.scrollTo(0, 0);
+
+window.addEventListener('beforeunload', () => {
+  window.scrollTo(0, 0);
+});
+
+// ==========================================
+// 2. Gate Opening -> Parda Open -> Text Reveal (Mobile Touch Fixed)
+// ==========================================
+const gateOverlay = document.getElementById('gateOverlay');
+const openTrigger = document.getElementById('openTrigger');
+const curtainStage = document.getElementById('curtainStage');
+const coupleDetails = document.getElementById('coupleDetails');
+const fountainContainer = document.getElementById('fountainContainer');
+const bgMusic = document.getElementById('bgMusic');
+const audioBtn = document.getElementById('audioToggle');
+
+let isMusicPlaying = false;
+let gateAlreadyOpened = false;
+
+window.addEventListener('DOMContentLoaded', () => {
+  window.scrollTo(0, 0);
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+  document.body.classList.add('gate-locked');
+  if (gateOverlay) {
+    gateOverlay.classList.remove('opened');
+  }
+});
+
+function handleGateOpen(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  if (gateAlreadyOpened) return;
+  gateAlreadyOpened = true;
+
+  window.scrollTo(0, 0);
+
+  // 1. Gate Overlay open
+  if (gateOverlay) {
+    gateOverlay.classList.add('opened');
+  }
+
+  // 2. Try Audio Play safely
+  if (bgMusic && !isMusicPlaying) {
+    const playPromise = bgMusic.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        isMusicPlaying = true;
+      }).catch(() => {
+        // Mobile strict autoplay block bypass
+      });
+    }
+  }
+
+  // 3. Parda Open
+  setTimeout(() => {
+    if (curtainStage) {
+      curtainStage.classList.add('parda-opened');
+    }
+  }, 400);
+
+  // 4. Content Reveal
+  setTimeout(() => {
+    if (coupleDetails) {
+      coupleDetails.classList.add('text-visible');
+    }
+    if (fountainContainer) {
+      fountainContainer.classList.add('fountain-visible');
+    }
+    document.body.classList.remove('gate-locked');
+  }, 1000);
+}
+
+// Click aur Touch dono ko register karein
+if (openTrigger) {
+  openTrigger.addEventListener('touchend', handleGateOpen, { passive: false });
+  openTrigger.addEventListener('click', handleGateOpen);
+}
+
+// Audio Toggle Button
+if (audioBtn && bgMusic) {
+  audioBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isMusicPlaying) {
+      bgMusic.pause();
+      audioBtn.style.opacity = '0.5';
+    } else {
+      bgMusic.play().catch(() => {});
+      audioBtn.style.opacity = '1';
+    }
+    isMusicPlaying = !isMusicPlaying;
+  });
+}
+
+// ==========================================
+// 3. Scratch Card & Auto Confetti Blast
 // ==========================================
 const canvas = document.getElementById('scratchCanvas');
 const scratchHeading = document.getElementById('scratchHeading');
 
 let isScratching = false;
+let scratchCount = 0;
 let isRevealed = false;
-let lastCheckTime = 0;
 
 if (canvas) {
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const ctx = canvas.getContext('2d');
 
   function initHeartCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -25,7 +129,6 @@ if (canvas) {
     ctx.closePath();
     ctx.clip();
 
-    // Sage-green metallic gradient
     const grad = ctx.createRadialGradient(130, 100, 10, 130, 120, 140);
     grad.addColorStop(0, '#a5b59e');
     grad.addColorStop(0.5, '#7f9379');
@@ -33,7 +136,6 @@ if (canvas) {
     ctx.fillStyle = grad;
     ctx.fill();
 
-    // Shimmer gold dust particles
     for (let i = 0; i < 400; i++) {
       ctx.beginPath();
       ctx.arc(
@@ -95,77 +197,128 @@ if (canvas) {
     triggerConfettiBlast();
   }
 
-  // Calculate kitna percent scratch ho chuka hai
-  function checkScratchPercentage() {
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const pixels = imgData.data;
-    let transparentPixels = 0;
-    let totalTargetPixels = 0;
+  function scratch(e) {
+    if (!isScratching || isRevealed) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
 
-    // Scan every 4th pixel for super-fast performance
-    for (let i = 3; i < pixels.length; i += 16) {
-      totalTargetPixels++;
-      if (pixels[i] === 0) {
-        transparentPixels++;
-      }
-    }
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x, y, 22, 0, Math.PI * 2);
+    ctx.fill();
 
-    const percentage = (transparentPixels / totalTargetPixels) * 100;
-    
-    // Jab tak 45% card clear na ho tab tak reveal nahi hoga
-    if (percentage > 45) {
+    scratchCount++;
+    if (scratchCount > 4) {
       triggerAutoReveal();
     }
   }
 
-  function scratch(e) {
-    if (!isScratching || isRevealed) return;
-    const rect = canvas.getBoundingClientRect();
-    
-    let clientX, clientY;
-    if (e.touches && e.touches.length > 0) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(x, y, 16, 0, Math.PI * 2); // Real scratch brush size
-    ctx.fill();
-
-    // Har 100ms me ek baar progress check karega
-    const now = Date.now();
-    if (now - lastCheckTime > 100) {
-      lastCheckTime = now;
-      checkScratchPercentage();
-    }
-  }
-
-  canvas.addEventListener('mousedown', (e) => {
-    isScratching = true;
-    scratch(e);
+  ['mousedown', 'touchstart'].forEach(evt => {
+    canvas.addEventListener(evt, (e) => {
+      isScratching = true;
+      scratch(e);
+    }, { passive: true });
   });
 
-  canvas.addEventListener('touchstart', (e) => {
-    isScratching = true;
-    scratch(e);
-  }, { passive: true });
+  ['mousemove', 'touchmove'].forEach(evt => {
+    canvas.addEventListener(evt, scratch, { passive: true });
+  });
 
-  window.addEventListener('mousemove', scratch);
-  window.addEventListener('touchmove', scratch, { passive: true });
-
-  ['mouseup', 'touchend', 'touchcancel'].forEach(evt => {
-    window.addEventListener(evt, () => {
+  ['mouseup', 'mouseleave', 'touchend'].forEach(evt => {
+    canvas.addEventListener(evt, () => {
       isScratching = false;
-      if (!isRevealed) {
-        checkScratchPercentage();
-      }
     });
+  });
+}
+
+// ==========================================
+// 4. Auto Smooth Photo Carousel (3 Images)
+// ==========================================
+const track = document.getElementById('carouselTrack');
+const dots = document.querySelectorAll('#sliderDots .dot');
+let currentSlide = 0;
+const totalSlides = 3;
+
+function goToSlide(index) {
+  currentSlide = index;
+  if (track) {
+    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+  }
+  dots.forEach((dot, i) => {
+    if (i === currentSlide) {
+      dot.classList.add('active');
+    } else {
+      dot.classList.remove('active');
+    }
+  });
+}
+
+let slideInterval = setInterval(() => {
+  currentSlide = (currentSlide + 1) % totalSlides;
+  goToSlide(currentSlide);
+}, 3200);
+
+dots.forEach((dot) => {
+  dot.addEventListener('click', (e) => {
+    clearInterval(slideInterval);
+    const targetIdx = parseInt(e.target.getAttribute('data-index'));
+    goToSlide(targetIdx);
+    slideInterval = setInterval(() => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      goToSlide(currentSlide);
+    }, 3200);
+  });
+});
+
+// ==========================================
+// 5. Live Countdown Timer (Nov 30, 2026)
+// ==========================================
+const targetDate = new Date("April 21, 2027 12:30:00").getTime();
+
+function updateCountdown() {
+  const now = new Date().getTime();
+  const difference = targetDate - now;
+
+  if (difference > 0) {
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+    const d = document.getElementById('cd-days');
+    const h = document.getElementById('cd-hours');
+    const m = document.getElementById('cd-minutes');
+    const s = document.getElementById('cd-seconds');
+
+    if (d) d.innerText = String(days).padStart(2, '0');
+    if (h) h.innerText = String(hours).padStart(2, '0');
+    if (m) m.innerText = String(minutes).padStart(2, '0');
+    if (s) s.innerText = String(seconds).padStart(2, '0');
+  }
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ==========================================
+// 6. RSVP Form Handler (WhatsApp Auto-link)
+// ==========================================
+const rsvpForm = document.getElementById('rsvpForm');
+
+if (rsvpForm) {
+  rsvpForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('guestName').value;
+    const attending = document.getElementById('guestAttendance').value;
+    const message = document.getElementById('guestMessage').value;
+
+    const phoneNumber = "919579197321"; // Country code + mobile number
+    const text = `*Wedding RSVP*%0A*Name:* ${encodeURIComponent(name)}%0A*Attending:* ${encodeURIComponent(attending)}%0A*Wishes:* ${encodeURIComponent(message)}`;
+
+    window.open(`https://api.whatsapp.com/send?phone=${phoneNumber}&text=${text}`, '_blank');
+    alert("Thank you for your RSVP response!");
+    rsvpForm.reset();
   });
 }
