@@ -276,7 +276,7 @@ if (rsvpForm) {
     const attending = document.getElementById('guestAttendance').value;
     const message = document.getElementById('guestMessage').value;
 
-    const phoneNumber = "919876543210"; // Country code + mobile number
+    const phoneNumber = "919579197321"; // Country code + mobile number
     const text = `*Wedding RSVP*%0A*Name:* ${encodeURIComponent(name)}%0A*Attending:* ${encodeURIComponent(attending)}%0A*Wishes:* ${encodeURIComponent(message)}`;
 
     window.open(`https://api.whatsapp.com/send?phone=${phoneNumber}&text=${text}`, '_blank');
