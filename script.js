@@ -1,70 +1,4 @@
 // ==========================================
-// 1. Force Page to Top on Refresh / Load
-// ==========================================
-if ('scrollRestoration' in history) {
-  history.scrollRestoration = 'manual';
-}
-
-window.scrollTo(0, 0);
-
-window.addEventListener('beforeunload', () => {
-  window.scrollTo(0, 0);
-});
-
-// ==========================================
-// 2. Royal Gate Opening & Music Control
-// ==========================================
-const gateOverlay = document.getElementById('gateOverlay');
-const openTrigger = document.getElementById('openTrigger');
-const bgMusic = document.getElementById('bgMusic');
-const audioBtn = document.getElementById('audioToggle');
-
-let isMusicPlaying = false;
-
-// Lock body on load so scrollbar cannot leak background
-window.addEventListener('DOMContentLoaded', () => {
-  window.scrollTo(0, 0);
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
-  document.body.classList.add('gate-locked');
-  if (gateOverlay) {
-    gateOverlay.classList.remove('opened');
-  }
-});
-
-if (openTrigger) {
-  openTrigger.addEventListener('click', () => {
-    window.scrollTo(0, 0);
-    if (gateOverlay) {
-      gateOverlay.classList.add('opened');
-    }
-
-    // Unlock page scroll once the gate opens
-    document.body.classList.remove('gate-locked');
-
-    if (bgMusic && !isMusicPlaying) {
-      bgMusic.play().then(() => {
-        isMusicPlaying = true;
-      }).catch(() => {});
-    }
-  });
-}
-
-if (audioBtn && bgMusic) {
-  audioBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (isMusicPlaying) {
-      bgMusic.pause();
-      audioBtn.style.opacity = '0.5';
-    } else {
-      bgMusic.play();
-      audioBtn.style.opacity = '1';
-    }
-    isMusicPlaying = !isMusicPlaying;
-  });
-}
-
-// ==========================================
 // 3. Scratch Card & Auto Confetti Blast
 // ==========================================
 const canvas = document.getElementById('scratchCanvas');
@@ -167,11 +101,12 @@ if (canvas) {
 
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
-    ctx.arc(x, y, 22, 0, Math.PI * 2);
+    ctx.arc(x, y, 18, 0, Math.PI * 2); // Compact brush radius
     ctx.fill();
 
     scratchCount++;
-    if (scratchCount > 4) {
+    // 35-40 baar scratch karne par hi card reveal hoga
+    if (scratchCount > 38) {
       triggerAutoReveal();
     }
   }
@@ -191,96 +126,5 @@ if (canvas) {
     canvas.addEventListener(evt, () => {
       isScratching = false;
     });
-  });
-}
-
-// ==========================================
-// 4. Auto Smooth Photo Carousel (3 Images)
-// ==========================================
-const track = document.getElementById('carouselTrack');
-const dots = document.querySelectorAll('#sliderDots .dot');
-let currentSlide = 0;
-const totalSlides = 3;
-
-function goToSlide(index) {
-  currentSlide = index;
-  if (track) {
-    track.style.transform = `translateX(-${currentSlide * 100}%)`;
-  }
-  dots.forEach((dot, i) => {
-    if (i === currentSlide) {
-      dot.classList.add('active');
-    } else {
-      dot.classList.remove('active');
-    }
-  });
-}
-
-let slideInterval = setInterval(() => {
-  currentSlide = (currentSlide + 1) % totalSlides;
-  goToSlide(currentSlide);
-}, 3200);
-
-dots.forEach((dot) => {
-  dot.addEventListener('click', (e) => {
-    clearInterval(slideInterval);
-    const targetIdx = parseInt(e.target.getAttribute('data-index'));
-    goToSlide(targetIdx);
-    slideInterval = setInterval(() => {
-      currentSlide = (currentSlide + 1) % totalSlides;
-      goToSlide(currentSlide);
-    }, 3200);
-  });
-});
-
-// ==========================================
-// 5. Live Countdown Timer (Nov 30, 2026)
-// ==========================================
-const targetDate = new Date("April 21, 2027 12:30:00").getTime();
-
-function updateCountdown() {
-  const now = new Date().getTime();
-  const difference = targetDate - now;
-
-  if (difference > 0) {
-    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-    const d = document.getElementById('cd-days');
-    const h = document.getElementById('cd-hours');
-    const m = document.getElementById('cd-minutes');
-    const s = document.getElementById('cd-seconds');
-
-    if (d) d.innerText = String(days).padStart(2, '0');
-    if (h) h.innerText = String(hours).padStart(2, '0');
-    if (m) m.innerText = String(minutes).padStart(2, '0');
-    if (s) s.innerText = String(seconds).padStart(2, '0');
-  }
-}
-
-setInterval(updateCountdown, 1000);
-updateCountdown();
-
-// ==========================================
-// 6. RSVP Form Handler (WhatsApp Auto-link)
-// ==========================================
-const rsvpForm = document.getElementById('rsvpForm');
-
-if (rsvpForm) {
-  rsvpForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById('guestName').value;
-    const attending = document.getElementById('guestAttendance').value;
-    const message = document.getElementById('guestMessage').value;
-
-    const phoneNumber = "919579197321"; // Country code + mobile number
-    const text = `*Wedding RSVP*%0A*Name:* ${encodeURIComponent(name)}%0A*Attending:* ${encodeURIComponent(attending)}%0A*Wishes:* ${encodeURIComponent(message)}`;
-
-    window.open(`https://api.whatsapp.com/send?phone=${phoneNumber}&text=${text}`, '_blank');
-    alert("Thank you for your RSVP response!");
-    rsvpForm.reset();
   });
 }
