@@ -1,15 +1,15 @@
 // ==========================================
-// 3. Scratch Card & Auto Confetti Blast
+// 3. Scratch Card (Pixel-Percentage Based Scratching)
 // ==========================================
 const canvas = document.getElementById('scratchCanvas');
 const scratchHeading = document.getElementById('scratchHeading');
 
 let isScratching = false;
-let scratchCount = 0;
 let isRevealed = false;
+let lastCheckTime = 0;
 
 if (canvas) {
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
   function initHeartCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -25,6 +25,7 @@ if (canvas) {
     ctx.closePath();
     ctx.clip();
 
+    // Sage-green metallic gradient
     const grad = ctx.createRadialGradient(130, 100, 10, 130, 120, 140);
     grad.addColorStop(0, '#a5b59e');
     grad.addColorStop(0.5, '#7f9379');
@@ -32,6 +33,7 @@ if (canvas) {
     ctx.fillStyle = grad;
     ctx.fill();
 
+    // Shimmer gold dust particles
     for (let i = 0; i < 400; i++) {
       ctx.beginPath();
       ctx.arc(
@@ -93,38 +95,77 @@ if (canvas) {
     triggerConfettiBlast();
   }
 
-  function scratch(e) {
-    if (!isScratching || isRevealed) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+  // Calculate kitna percent scratch ho chuka hai
+  function checkScratchPercentage() {
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imgData.data;
+    let transparentPixels = 0;
+    let totalTargetPixels = 0;
 
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(x, y, 18, 0, Math.PI * 2); // Compact brush radius
-    ctx.fill();
+    // Scan every 4th pixel for super-fast performance
+    for (let i = 3; i < pixels.length; i += 16) {
+      totalTargetPixels++;
+      if (pixels[i] === 0) {
+        transparentPixels++;
+      }
+    }
 
-    scratchCount++;
-    // 35-40 baar scratch karne par hi card reveal hoga
-    if (scratchCount > 38) {
+    const percentage = (transparentPixels / totalTargetPixels) * 100;
+    
+    // Jab tak 45% card clear na ho tab tak reveal nahi hoga
+    if (percentage > 45) {
       triggerAutoReveal();
     }
   }
 
-  ['mousedown', 'touchstart'].forEach(evt => {
-    canvas.addEventListener(evt, (e) => {
-      isScratching = true;
-      scratch(e);
-    }, { passive: true });
+  function scratch(e) {
+    if (!isScratching || isRevealed) return;
+    const rect = canvas.getBoundingClientRect();
+    
+    let clientX, clientY;
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x, y, 16, 0, Math.PI * 2); // Real scratch brush size
+    ctx.fill();
+
+    // Har 100ms me ek baar progress check karega
+    const now = Date.now();
+    if (now - lastCheckTime > 100) {
+      lastCheckTime = now;
+      checkScratchPercentage();
+    }
+  }
+
+  canvas.addEventListener('mousedown', (e) => {
+    isScratching = true;
+    scratch(e);
   });
 
-  ['mousemove', 'touchmove'].forEach(evt => {
-    canvas.addEventListener(evt, scratch, { passive: true });
-  });
+  canvas.addEventListener('touchstart', (e) => {
+    isScratching = true;
+    scratch(e);
+  }, { passive: true });
 
-  ['mouseup', 'mouseleave', 'touchend'].forEach(evt => {
-    canvas.addEventListener(evt, () => {
+  window.addEventListener('mousemove', scratch);
+  window.addEventListener('touchmove', scratch, { passive: true });
+
+  ['mouseup', 'touchend', 'touchcancel'].forEach(evt => {
+    window.addEventListener(evt, () => {
       isScratching = false;
+      if (!isRevealed) {
+        checkScratchPercentage();
+      }
     });
   });
 }
